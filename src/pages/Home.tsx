@@ -8,19 +8,31 @@ const CustomPromptGenerator: React.FC = () => {
 
   const generateCustomPrompt = async () => {
     try {
-      const apiUrl = 'http://localhost:3001/generateText'; // Replace with your actual server URL
-      const requestUrl = `${apiUrl}?prompt=${encodeURIComponent(promptInput)}`;
-
+      // Ensure promptInput is defined and not an empty string
+      if (!promptInput.trim()) {
+        console.error('Prompt is empty');
+        return;
+      }
+  
+      const apiUrl = 'http://localhost:3001/generateText';
+      const encodedPrompt = encodeURIComponent(promptInput);
+      const requestUrl = `${apiUrl}?prompt=${encodedPrompt}`;
+  
       const response = await fetch(requestUrl);
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
       const data = await response.json();
-
+  
       console.log(data);
       setResult(data);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error.message);
     }
   };
-
+  
   return (
     <div>
       <h1>Custom Prompt Generator</h1>
@@ -43,6 +55,7 @@ const CustomPromptGenerator: React.FC = () => {
         <div>
           <h2>Result:</h2>
           <pre>{JSON.stringify(result, null, 2)}</pre>
+          <h2>{JSON.stringify()}</h2>
         </div>
       )}
     </div>
