@@ -1,30 +1,52 @@
-import React, { useState } from 'react'
+// CustomPromptGenerator.tsx
 
-const Home = () => {
-    const [prompt, setPrompt] = useState("");
-    const [loading, setLoading] = useState(false);
-    const handleChange = (event) => {
-        setPrompt(event.target.value);
-    }  
-    const handleSubmit = async () => {
-        try {
-            setLoading(true);
-            const data = await fetch (
-                `https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText?key=$PALM_API_KEY`
-            )
-        } catch(err) {
-            console.log(err);
-        } finally {
-            setLoading(false);
-        }
+import React, { useState } from 'react';
+
+const CustomPromptGenerator: React.FC = () => {
+  const [promptInput, setPromptInput] = useState('');
+  const [result, setResult] = useState<any | null>(null);
+
+  const generateCustomPrompt = async () => {
+    try {
+      const apiUrl = 'http://localhost:3001/generateText'; // Replace with your actual server URL
+      const requestUrl = `${apiUrl}?prompt=${encodeURIComponent(promptInput)}`;
+
+      const response = await fetch(requestUrl);
+      const data = await response.json();
+
+      console.log(data);
+      setResult(data);
+    } catch (error) {
+      console.error('Error:', error);
     }
+  };
+
   return (
     <div>
-        <h2>Ask something</h2>
-        <input type="text" className='border border-black'  onChange={handleChange}/>
-        <button onSubmit={}></button>
-    </div>
-  )
-}
+      <h1>Custom Prompt Generator</h1>
 
-export default Home
+      <label htmlFor="promptInput">Enter a custom prompt:</label>
+      <input
+        type="text"
+        id="promptInput"
+        name="promptInput"
+        value={promptInput}
+        onChange={(e) => setPromptInput(e.target.value)}
+        required
+      />
+
+      <button type="button" onClick={generateCustomPrompt}>
+        Generate Text
+      </button>
+
+      {result && (
+        <div>
+          <h2>Result:</h2>
+          <pre>{JSON.stringify(result, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CustomPromptGenerator;
